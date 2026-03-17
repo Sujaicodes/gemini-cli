@@ -24,10 +24,12 @@ Follow these steps autonomously, focusing on helping the author complete the PR:
 
 3.  **Autonomous CI Fixes:**
     -   Propose and apply fixes for linting or test failures.
+    -   **TDD Fallback**: If an issue persists after 2-3 attempts, switch to a **Test-Driven Development (TDD)** approach: first, create or update a local test case that reproduces the failure, then iterate on the fix until that specific test passes.
     -   Verify fixes locally using project standards (e.g., `npm run lint`, `npm test`).
 
 4.  **Final Cleanup & Update:**
     -   Sync with the latest `main`: `git fetch origin main && git rebase origin/main`.
+    -   **Mandatory Verification**: You MUST verify that ALL relevant tests pass locally (e.g., `npm run test`, or the specific test files affected) before pushing any changes to the remote branch.
     -   Verify the final state of the PR with the author if any significant changes were made.
     -   Commit changes and force-push with lease: `git push origin HEAD --force-with-lease`.
 
