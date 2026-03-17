@@ -105,6 +105,7 @@ import {
   type UIActions,
 } from './contexts/UIActionsContext.js';
 import { KeypressProvider } from './contexts/KeypressContext.js';
+import { MouseProvider } from './contexts/MouseContext.js';
 import { OverflowProvider } from './contexts/OverflowContext.js';
 import {
   useOverflowActions,
@@ -267,15 +268,17 @@ describe('AppContainer State Management', () => {
   } = {}) => (
     <SettingsContext.Provider value={settings}>
       <KeypressProvider config={config}>
-        <OverflowProvider>
-          <AppContainer
-            config={config}
-            version={version}
-            initializationResult={initResult}
-            startupWarnings={startupWarnings}
-            resumedSessionData={resumedSessionData}
-          />
-        </OverflowProvider>
+        <MouseProvider>
+          <OverflowProvider>
+            <AppContainer
+              config={config}
+              version={version}
+              initializationResult={initResult}
+              startupWarnings={startupWarnings}
+              resumedSessionData={resumedSessionData}
+            />
+          </OverflowProvider>
+        </MouseProvider>
       </KeypressProvider>
     </SettingsContext.Provider>
   );
@@ -488,6 +491,7 @@ describe('AppContainer State Management', () => {
     mockSettings = {
       merged: {
         ...defaultMergedSettings,
+        general: { debugKeystrokeLogging: false },
         hideBanner: false,
         hideFooter: false,
         hideTips: false,
@@ -500,6 +504,8 @@ describe('AppContainer State Management', () => {
           useAlternateBuffer: false,
         },
       },
+      subscribe: vi.fn(() => () => {}),
+      getSnapshot: vi.fn(() => ({})),
     } as unknown as LoadedSettings;
 
     // Mock InitializationResult
@@ -1012,11 +1018,14 @@ describe('AppContainer State Management', () => {
       const settingsAllHidden = {
         merged: {
           ...defaultMergedSettings,
+          general: { debugKeystrokeLogging: false },
           hideBanner: true,
           hideFooter: true,
           hideTips: true,
           showMemoryUsage: false,
         },
+        subscribe: vi.fn(() => () => {}),
+        getSnapshot: vi.fn(() => ({})),
       } as unknown as LoadedSettings;
 
       let unmount: () => void;
@@ -1033,11 +1042,14 @@ describe('AppContainer State Management', () => {
       const settingsWithMemory = {
         merged: {
           ...defaultMergedSettings,
+          general: { debugKeystrokeLogging: false },
           hideBanner: false,
           hideFooter: false,
           hideTips: false,
           showMemoryUsage: true,
         },
+        subscribe: vi.fn(() => () => {}),
+        getSnapshot: vi.fn(() => ({})),
       } as unknown as LoadedSettings;
 
       let unmount: () => void;
@@ -1080,7 +1092,11 @@ describe('AppContainer State Management', () => {
     it('handles undefined settings gracefully', async () => {
       const undefinedSettings = {
         merged: mergeSettings({}, {}, {}, {}, true),
-      } as LoadedSettings;
+        subscribe: vi.fn(() => () => {}),
+        getSnapshot: vi.fn(() => ({
+          merged: { general: { debugKeystrokeLogging: false } },
+        })),
+      } as unknown as LoadedSettings;
 
       let unmount: () => void;
       await act(async () => {
@@ -3705,11 +3721,14 @@ describe('AppContainer State Management', () => {
       const settingsWithAlternateBuffer = {
         merged: {
           ...alternateSettings,
+          general: { debugKeystrokeLogging: false },
           ui: {
             ...alternateSettings.ui,
             useAlternateBuffer: true,
           },
         },
+        subscribe: vi.fn(() => () => {}),
+        getSnapshot: vi.fn(() => ({})),
       } as unknown as LoadedSettings;
 
       vi.spyOn(mockConfig, 'getUseAlternateBuffer').mockReturnValue(true);
